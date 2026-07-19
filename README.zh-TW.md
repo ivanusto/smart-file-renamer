@@ -1,4 +1,4 @@
-# Smart File Renamer (智能檔案重新命名)
+# Smart File Renamer (智慧檔案重新命名)
 
 [English Version README](README.md)
 
