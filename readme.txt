@@ -31,6 +31,8 @@ Smart File Renamer is a WordPress plugin that automatically sanitizes uploaded f
 * Media-heavy websites requiring consistent slug-style naming
 * Educational institutions and international businesses
 
+This plugin is one of the origin projects of Omni Webmaster & SEO Suite, an all-in-one webmaster toolkit by the same author that consolidates and optimizes these standalone plugins: https://github.com/ivanusto/omni-webmaster-seo-suite
+
 == Installation ==
 
 1. Upload the plugin files to `/wp-content/plugins/smart-file-renamer`, or install directly through the WordPress plugins screen.
