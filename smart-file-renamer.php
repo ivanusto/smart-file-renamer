@@ -3,7 +3,7 @@
  * Plugin Name: Smart File Renamer
  * Plugin URI: https://github.com/ivanlin/smart-file-renamer
  * Description: Automatically renames files with accents and special characters during upload for better SEO.
- * Version: 1.1.0
+ * Version: 1.2.0
  * Author: Ivan Lin
  * Author URI: https://github.com/ivanlin
  * License: Apache-2.0
@@ -19,8 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class SmartFileRenamer {
 
-    /** @var self|null */
-    private static $instance = null;
+    private static ?self $instance = null;
 
     public static function instance(): self {
         if ( null === self::$instance ) {
@@ -36,7 +35,7 @@ final class SmartFileRenamer {
     }
 
     public function rename_file( string $filename ): string {
-        $extension = pathinfo( $filename, PATHINFO_EXTENSION );
+        $extension = strtolower( pathinfo( $filename, PATHINFO_EXTENSION ) );
         $name      = pathinfo( $filename, PATHINFO_FILENAME );
 
         // Transliterate Latin diacritics to ASCII equivalents (WordPress built-in, 200+ characters)

@@ -3,7 +3,7 @@ Contributors: ivanlin
 Tags: upload, files, rename, special characters, seo
 Requires at least: 5.0
 Tested up to: 6.7.1
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 Requires PHP: 7.4
 License: Apache-2.0
 License URI: http://www.apache.org/licenses/LICENSE-2.0
@@ -62,6 +62,11 @@ You can enable or disable the date prefix. Additional format options may be adde
 1. Plugin settings page
 
 == Changelog ==
+
+= 1.2.0 =
+* Code optimization: convert file extensions to lowercase during sanitization to avoid server/browser path mismatches on case-sensitive OS environments.
+* Enforced singleton typed properties for PHP 7.4+ type safety.
+* Added default English and Traditional Chinese README files.
 
 = 1.1.0 =
 * Replaced custom character map with WordPress built-in `remove_accents()` (200+ Latin diacritics)
