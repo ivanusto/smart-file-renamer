@@ -6,8 +6,8 @@
  * Version: 1.2.0
  * Author: Ivan Lin
  * Author URI: https://github.com/ivanlin
- * License: Apache-2.0
- * License URI: http://www.apache.org/licenses/LICENSE-2.0
+ * License: GPLv2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: smart-file-renamer
  * Requires at least: 5.0
  * Requires PHP: 7.4
