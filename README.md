@@ -47,6 +47,6 @@ Other standalone modules in the ecosystem:
 
 ---
 
-## License
+## License / 授權條款
 
-This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file or the header comments for details.
+This project is licensed under the [GNU General Public License v2.0 or later (GPL-2.0-or-later)](LICENSE).
