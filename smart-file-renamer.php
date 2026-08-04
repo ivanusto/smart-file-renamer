@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: Smart File Renamer
- * Plugin URI: https://github.com/ivanlin/smart-file-renamer
+ * Plugin URI: https://github.com/ivanusto/smart-file-renamer
  * Description: Automatically renames files with accents and special characters during upload for better SEO.
- * Version: 1.2.0
+ * Version: 1.2.1
  * Author: Ivan Lin
- * Author URI: https://github.com/ivanlin
+ * Author URI: https://github.com/ivanusto
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: smart-file-renamer
@@ -17,6 +17,9 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
+// Keep the historical class name: Omni Webmaster & SEO Suite detects it via
+// class_exists( 'SmartFileRenamer' ) to avoid renaming files twice.
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound
 final class SmartFileRenamer {
 
     private static ?self $instance = null;
@@ -138,8 +141,4 @@ SmartFileRenamer::instance();
 
 register_activation_hook( __FILE__, static function (): void {
     add_option( 'sfr_add_date_prefix', false );
-} );
-
-register_deactivation_hook( __FILE__, static function (): void {
-    delete_option( 'sfr_add_date_prefix' );
 } );

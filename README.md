@@ -4,7 +4,7 @@
 
 Automatically sanitize and rename uploaded files into clean, SEO-friendly names. It transliterates Latin diacritics, normalizes separators, strips non-ASCII characters, and lowercases both filenames and extensions to ensure compatibility across all operating systems.
 
-![Version](https://img.shields.io/badge/version-1.1.0-blue) ![WordPress](https://img.shields.io/badge/WordPress-5.0%2B-21759b) ![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![Version](https://img.shields.io/badge/version-1.2.1-blue) ![WordPress](https://img.shields.io/badge/WordPress-5.0%2B-21759b) ![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4) ![License](https://img.shields.io/badge/license-GPL--2.0--or--later-green)
 
 ---
 
@@ -24,7 +24,7 @@ Automatically sanitize and rename uploaded files into clean, SEO-friendly names.
 This plugin is a standalone companion in the **Omni Webmaster & SEO Suite** ecosystem.
 
 If you are looking for an all-in-one performance and SEO toolkit, consider using:
-- **[Omni Webmaster & SEO Suite](https://github.com/ivanusto/omni-webmaster-seo-suite)** — A comprehensive suite that consolidates advanced RSS controls, HTML head cleanup, robots customization, comment disabling, selective thumbnail pruning, Google Translate URL slug conversion, and Meta Pixel tracking into a single settings panel.
+- **[Omni Webmaster & SEO Suite](https://wordpress.org/plugins/omni-webmaster-seo-suite/)** ([GitHub](https://github.com/ivanusto/omni-webmaster-seo-suite)) — A comprehensive suite that consolidates advanced RSS controls, HTML head cleanup, robots customization, comment disabling, selective thumbnail pruning, upload file renaming (this plugin's feature), upload image resizing, Google Translate URL slug conversion, and Meta Pixel tracking into a single settings panel. Do not run both at once — the suite automatically yields to this standalone plugin to avoid renaming files twice.
 
 Other standalone modules in the ecosystem:
 - **[modern-rss-image-feed](https://github.com/ivanusto/modern-rss-image-feed)** — Add modern image formats (WebP, AVIF) support to RSS feeds with proper grouping.

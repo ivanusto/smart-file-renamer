@@ -1,12 +1,12 @@
 === Smart File Renamer ===
-Contributors: ivanlin
+Contributors: ivanusto
 Tags: upload, files, rename, special characters, seo
 Requires at least: 5.0
-Tested up to: 6.7.1
-Stable tag: 1.2.0
+Tested up to: 7.0
+Stable tag: 1.2.1
 Requires PHP: 7.4
-License: Apache-2.0
-License URI: http://www.apache.org/licenses/LICENSE-2.0
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Automatically renames uploaded files containing accents and special characters to improve SEO and maintain consistency.
 
@@ -31,7 +31,7 @@ Smart File Renamer is a WordPress plugin that automatically sanitizes uploaded f
 * Media-heavy websites requiring consistent slug-style naming
 * Educational institutions and international businesses
 
-This plugin is one of the origin projects of Omni Webmaster & SEO Suite, an all-in-one webmaster toolkit by the same author that consolidates and optimizes these standalone plugins: https://github.com/ivanusto/omni-webmaster-seo-suite
+This plugin's functionality is also integrated into Omni Webmaster & SEO Suite, an all-in-one webmaster toolkit by the same author available on WordPress.org: https://wordpress.org/plugins/omni-webmaster-seo-suite/ — do not run both at once; the suite automatically yields to this standalone plugin to avoid renaming files twice.
 
 == Installation ==
 
@@ -63,6 +63,12 @@ You can enable or disable the date prefix. Additional format options may be adde
 
 == Changelog ==
 
+= 1.2.1 =
+* Settings are no longer deleted on plugin deactivation; cleanup now happens only when the plugin is uninstalled (new uninstall.php).
+* Fixed broken Plugin URI / Author URI links in the plugin header (wrong GitHub username).
+* Updated license metadata in readme.txt to GPLv2 or later to match the plugin header and bundled LICENSE.
+* Noted the Omni Webmaster & SEO Suite integration (now live on WordPress.org) in the readme.
+
 = 1.2.0 =
 * Code optimization: convert file extensions to lowercase during sanitization to avoid server/browser path mismatches on case-sensitive OS environments.
 * Enforced singleton typed properties for PHP 7.4+ type safety.
@@ -89,5 +95,5 @@ Improved transliteration, edge-case fixes, and code quality improvements. No dat
 
 == License ==
 
-This plugin is released under the Apache License 2.0.
-See: http://www.apache.org/licenses/LICENSE-2.0
+This plugin is released under the GNU General Public License v2.0 or later.
+See: https://www.gnu.org/licenses/gpl-2.0.html
