@@ -4,7 +4,7 @@
 
 上傳檔案時自動進行名稱清理與標準化，轉換成乾淨且符合 SEO 的檔名。支援將拉丁變音符號轉換為對應字母、將分隔符號統一為連字號（hyphen）、清除所有非 ASCII 字元，並將檔名與副檔名轉換為小寫，以確保在各類作業系統伺服器上的跨平台相容性。
 
-![Version](https://img.shields.io/badge/version-1.2.1-blue) ![WordPress](https://img.shields.io/badge/WordPress-5.0%2B-21759b) ![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4) ![License](https://img.shields.io/badge/license-GPL--2.0--or--later-green)
+![Version](https://img.shields.io/badge/version-1.2.2-blue) ![WordPress](https://img.shields.io/badge/WordPress-5.0%2B-21759b) ![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4) ![License](https://img.shields.io/badge/license-GPL--2.0--or--later-green)
 
 ---
 

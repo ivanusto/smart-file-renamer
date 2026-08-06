@@ -3,7 +3,7 @@
  * Plugin Name: Smart File Renamer
  * Plugin URI: https://github.com/ivanusto/smart-file-renamer
  * Description: Automatically renames files with accents and special characters during upload for better SEO.
- * Version: 1.2.1
+ * Version: 1.2.2
  * Author: Ivan Lin
  * Author URI: https://github.com/ivanusto
  * License: GPLv2 or later
@@ -32,9 +32,29 @@ final class SmartFileRenamer {
     }
 
     private function __construct() {
-        add_filter( 'sanitize_file_name', [ $this, 'rename_file' ] );
+        // Only rename files that are actually being uploaded or sideloaded.
+        //
+        // The obvious hook here is 'sanitize_file_name', but that filter is global:
+        // WordPress, themes and plugins run it over every name they treat as a file
+        // name, including generated CSS caches and temp files. Renaming those breaks
+        // whichever code wrote the file under its original name (for example
+        // "style_dynamic.css" would come back as "style-dynamic.css").
+        add_filter( 'wp_handle_upload_prefilter', [ $this, 'rename_upload' ] );
+        add_filter( 'wp_handle_sideload_prefilter', [ $this, 'rename_upload' ] );
         add_action( 'admin_menu', [ $this, 'add_admin_menu' ] );
         add_action( 'admin_init', [ $this, 'register_settings' ] );
+    }
+
+    /**
+     * Normalize the file name of an upload in progress
+     *
+     * @param array $file Upload array as passed by WordPress ('name', 'type', 'tmp_name', ...).
+     */
+    public function rename_upload( array $file ): array {
+        if ( ! empty( $file['name'] ) ) {
+            $file['name'] = $this->rename_file( $file['name'] );
+        }
+        return $file;
     }
 
     public function rename_file( string $filename ): string {

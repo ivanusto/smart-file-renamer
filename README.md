@@ -4,7 +4,7 @@
 
 Automatically sanitize and rename uploaded files into clean, SEO-friendly names. It transliterates Latin diacritics, normalizes separators, strips non-ASCII characters, and lowercases both filenames and extensions to ensure compatibility across all operating systems.
 
-![Version](https://img.shields.io/badge/version-1.2.1-blue) ![WordPress](https://img.shields.io/badge/WordPress-5.0%2B-21759b) ![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4) ![License](https://img.shields.io/badge/license-GPL--2.0--or--later-green)
+![Version](https://img.shields.io/badge/version-1.2.2-blue) ![WordPress](https://img.shields.io/badge/WordPress-5.0%2B-21759b) ![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4) ![License](https://img.shields.io/badge/license-GPL--2.0--or--later-green)
 
 ---
 
