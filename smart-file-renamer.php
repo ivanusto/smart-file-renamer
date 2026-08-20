@@ -3,7 +3,7 @@
  * Plugin Name: Smart File Renamer
  * Plugin URI: https://github.com/ivanusto/smart-file-renamer
  * Description: Automatically renames files with accents and special characters during upload for better SEO.
- * Version: 1.2.2
+ * Version: 1.2.3
  * Author: Ivan Lin
  * Author URI: https://github.com/ivanusto
  * License: GPLv2 or later
@@ -24,6 +24,11 @@ final class SmartFileRenamer {
 
     private static ?self $instance = null;
 
+    /**
+     * Route of the REST request currently being served, if any.
+     */
+    private string $rest_route = '';
+
     public static function instance(): self {
         if ( null === self::$instance ) {
             self::$instance = new self();
@@ -41,8 +46,49 @@ final class SmartFileRenamer {
         // "style_dynamic.css" would come back as "style-dynamic.css").
         add_filter( 'wp_handle_upload_prefilter', [ $this, 'rename_upload' ] );
         add_filter( 'wp_handle_sideload_prefilter', [ $this, 'rename_upload' ] );
+        add_filter( 'rest_pre_dispatch', [ $this, 'remember_rest_route' ], 10, 3 );
         add_action( 'admin_menu', [ $this, 'add_admin_menu' ] );
         add_action( 'admin_init', [ $this, 'register_settings' ] );
+    }
+
+    /**
+     * Record the REST route being served, so rename_upload() can recognise a
+     * sideload without re-parsing the request.
+     *
+     * @param mixed           $result  Response to replace the requested version with.
+     * @param WP_REST_Server  $server  Server instance.
+     * @param WP_REST_Request $request Request used to generate the response.
+     * @return mixed The unchanged $result.
+     */
+    public function remember_rest_route( $result, $server, $request ) {
+        if ( $request instanceof WP_REST_Request ) {
+            $this->rest_route = (string) $request->get_route();
+        }
+        return $result;
+    }
+
+    /**
+     * Whether the current request is WordPress 7.1's sub-size sideload.
+     *
+     * Client-side media processing generates every sub-size in the browser and
+     * posts them back one at a time to /wp/v2/media/{id}/sideload, along with
+     * companion files such as the HEIC original or a converted animated GIF.
+     * Those go through wp_handle_upload() and wp_handle_sideload() like any
+     * other upload, so this plugin's prefilter runs on them too - except the
+     * name the browser sends is already derived from the stored base name.
+     *
+     * Renaming it again is wrong twice over: the optional date prefix gets
+     * stacked ("2026-08-20-2026-08-20-photo-150x150.jpg"), and because the
+     * result no longer begins with the attachment's base name, core's
+     * filter_wp_unique_filename() stops stripping the collision suffix and
+     * leaves a "-1" on every file.
+     */
+    private function is_sideload_request(): bool {
+        if ( ! defined( 'REST_REQUEST' ) || ! REST_REQUEST || '' === $this->rest_route ) {
+            return false;
+        }
+
+        return 1 === preg_match( '#^/wp/v2/media/\d+/sideload$#', $this->rest_route );
     }
 
     /**
@@ -51,6 +97,10 @@ final class SmartFileRenamer {
      * @param array $file Upload array as passed by WordPress ('name', 'type', 'tmp_name', ...).
      */
     public function rename_upload( array $file ): array {
+        if ( $this->is_sideload_request() ) {
+            return $file;
+        }
+
         if ( ! empty( $file['name'] ) ) {
             $file['name'] = $this->rename_file( $file['name'] );
         }
