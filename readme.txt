@@ -2,8 +2,8 @@
 Contributors: ivanusto
 Tags: upload, files, rename, special characters, seo
 Requires at least: 5.0
-Tested up to: 7.0
-Stable tag: 1.2.2
+Tested up to: 7.1
+Stable tag: 1.2.3
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -62,6 +62,11 @@ You can enable or disable the date prefix. Additional format options may be adde
 1. Plugin settings page
 
 == Changelog ==
+
+= 1.2.3 =
+* Fixed: WordPress 7.1 renamed every sub-size twice. Its client-side media processing generates sub-sizes in the browser and posts them back one at a time to `/wp/v2/media/{id}/sideload`, along with companion files such as the HEIC original of a converted photo or the video an animated GIF becomes. Those go through the same upload prefilter as a normal upload, but the name the browser sends is already derived from the stored base name, so the date prefix was applied a second time: `photo-150x150.jpg` was stored as `2026-08-20-2026-08-20-photo-150x150-1.jpg`. The trailing `-1` came with it, because a name that no longer begins with the attachment's base name stops core's `filter_wp_unique_filename()` from stripping the collision suffix. Sideloaded files are now left alone.
+* Sites with the date prefix option disabled were unaffected: the remaining rules are idempotent, so a name that has already been normalized comes back unchanged.
+* Tested against WordPress 7.1.
 
 = 1.2.2 =
 * Fixed: renaming was hooked to the global `sanitize_file_name` filter, which WordPress, themes, and plugins run over every string they treat as a file name — not just uploads. Generated cache files came back altered (underscores turned into hyphens, non-Latin characters stripped entirely), so any code that writes a file under one name and reads it back under another silently failed. On one site this surfaced as the theme's header and main menu rendering nothing at all.
