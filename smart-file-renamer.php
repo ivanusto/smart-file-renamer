@@ -229,8 +229,10 @@ final class SmartFileRenamer {
             $name = 'file-' . time();
         }
 
+        // Site time zone, like serial mode above: gmdate() would stamp an
+        // upload made at 03:00 in Taipei with the previous day's date.
         if ( get_option( 'sfr_add_date_prefix', false ) ) {
-            $name = gmdate( 'Y-m-d' ) . '-' . $name;
+            $name = current_time( 'Y-m-d' ) . '-' . $name;
         }
 
         return $extension !== '' ? "{$name}.{$extension}" : $name;
