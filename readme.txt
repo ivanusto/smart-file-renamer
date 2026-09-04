@@ -25,6 +25,7 @@ Smart File Renamer is a WordPress plugin that automatically sanitizes uploaded f
 * Optional date prefix (YYYY-MM-DD) for chronological file organization
 * Optional time-based file names (YYYY-MM-DD-HHMMSS) for every upload, with the original name kept as the media library title
 * Simple settings interface under Settings → File Renamer
+* Traditional Chinese (zh_TW) translation bundled
 
 = Use Cases =
 
@@ -75,6 +76,8 @@ You can enable or disable the date prefix. Additional format options may be adde
 = 1.3.0 =
 * New: **Time-Based File Names** option. Every uploaded file is stored as its upload time, `2026-09-04-153012.jpg`, whatever it was called before. The previous rules only produced a timestamp when sanitization emptied the name completely, so a set of CJK uploads came out inconsistent — `今日快訊.jpg` became `file-1757000000.jpg` while `今日快訊2026.jpg` became `2026.jpg`. The time is read in the site's own time zone, so a file uploaded at 00:30 in Taipei carries that day's date rather than the UTC day before it. Off by default; the option sits above the date prefix under Settings → File Renamer.
 * The media library title still holds the name the file was uploaded under, so files stay searchable by their original name even when nothing of it survives in the file name. WordPress already does this in both upload paths — `media_handle_upload()` reads `$_FILES` before the renaming filter runs, and the REST controller keeps the submitted name — and the plugin now also covers the fallback in `WP_REST_Attachments_Controller::create_item()` that titles an attachment after the stored file. A title typed by a person, or read out of the image's IPTC metadata, is never touched.
+* Fixed: the settings page was always in English, whatever language the site ran in. The plugin declared a text domain but shipped no translations and never called `load_plugin_textdomain()`; WordPress loads translations by itself only for plugins hosted on translate.wordpress.org, which this one is not. A Traditional Chinese (zh_TW) translation is now bundled in `/languages` and loaded on `init`.
+* The date prefix option now carries the same kind of explanatory text as the time-based naming option, including a note that it is ignored while time-based names are on.
 
 = 1.2.3 =
 * Fixed: WordPress 7.1 renamed every sub-size twice. Its client-side media processing generates sub-sizes in the browser and posts them back one at a time to `/wp/v2/media/{id}/sideload`, along with companion files such as the HEIC original of a converted photo or the video an animated GIF becomes. Those go through the same upload prefilter as a normal upload, but the name the browser sends is already derived from the stored base name, so the date prefix was applied a second time: `photo-150x150.jpg` was stored as `2026-08-20-2026-08-20-photo-150x150-1.jpg`. The trailing `-1` came with it, because a name that no longer begins with the attachment's base name stops core's `filter_wp_unique_filename()` from stripping the collision suffix. Sideloaded files are now left alone.
@@ -113,7 +116,7 @@ You can enable or disable the date prefix. Additional format options may be adde
 == Upgrade Notice ==
 
 = 1.3.0 =
-Adds an optional time-based file naming mode. Existing behaviour is unchanged until you enable it. No database changes required.
+Adds an optional time-based file naming mode and a bundled Traditional Chinese translation. Existing behaviour is unchanged until you enable the new option. No database changes required.
 
 = 1.1.0 =
 Improved transliteration, edge-case fixes, and code quality improvements. No database changes required.

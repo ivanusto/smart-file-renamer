@@ -17,6 +17,7 @@ Automatically sanitize and rename uploaded files into clean, SEO-friendly names.
 - **Safe Fallback**: Generates a safe name (e.g., `file-1718000000.png`) if the entire filename consists of non-ASCII characters (like Chinese/Japanese/Korean) that get stripped.
 - **Optional Date Prefix**: Organize files chronologically with a toggleable `YYYY-MM-DD` prefix under **Settings → File Renamer**.
 - **Optional Time-Based File Names**: Store every upload under its upload time (`今日快訊.jpg` -> `2026-09-04-153012.jpg`), in the site's own time zone, so the result is predictable no matter what the file was called. The media library title keeps the name the file was uploaded under (`今日快訊`), so files stay searchable by their original name.
+- **Traditional Chinese Translation**: A zh_TW translation is bundled in `/languages`, so the settings page follows the site language instead of always rendering in English.
 
 ---
 

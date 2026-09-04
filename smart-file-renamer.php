@@ -9,6 +9,7 @@
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: smart-file-renamer
+ * Domain Path: /languages
  * Requires at least: 5.0
  * Requires PHP: 7.4
  */
@@ -56,8 +57,24 @@ final class SmartFileRenamer {
         add_filter( 'wp_handle_sideload_prefilter', [ $this, 'rename_upload' ] );
         add_filter( 'rest_pre_dispatch', [ $this, 'remember_rest_route' ], 10, 3 );
         add_filter( 'wp_insert_attachment_data', [ $this, 'keep_original_title' ], 10, 2 );
+        add_action( 'init', [ $this, 'load_textdomain' ] );
         add_action( 'admin_menu', [ $this, 'add_admin_menu' ] );
         add_action( 'admin_init', [ $this, 'register_settings' ] );
+    }
+
+    /**
+     * Load the bundled zh_TW translation from /languages.
+     *
+     * WordPress only loads translations automatically when they are hosted on
+     * translate.wordpress.org, which covers plugins in the .org directory but
+     * not this one, so the .mo files shipped with the plugin need this call.
+     * It runs on 'init' rather than 'plugins_loaded' because WordPress 6.7
+     * warns about translations loaded before then; every string here is used
+     * from an admin callback, all of which run later.
+     */
+    public function load_textdomain(): void {
+        // phpcs:ignore PluginCheck.CodeAnalysis.DiscouragedFunctions.load_plugin_textdomainFound
+        load_plugin_textdomain( 'smart-file-renamer', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
     }
 
     /**
@@ -291,9 +308,10 @@ final class SmartFileRenamer {
     public function date_prefix_callback(): void {
         $value = get_option( 'sfr_add_date_prefix', false );
         printf(
-            '<input type="checkbox" name="sfr_add_date_prefix" %s value="1"> %s',
+            '<input type="checkbox" name="sfr_add_date_prefix" %1$s value="1"> %2$s<p class="description">%3$s</p>',
             checked( $value, true, false ),
-            esc_html__( 'Add date prefix to file names (YYYY-MM-DD)', 'smart-file-renamer' )
+            esc_html__( 'Add date prefix to file names (YYYY-MM-DD)', 'smart-file-renamer' ),
+            esc_html__( 'The file keeps its sanitized name with the upload date in front of it: today-news.jpg becomes 2026-09-04-today-news.jpg, which keeps a large media library in chronological order. Ignored when time-based file names are on, since those already start with the date.', 'smart-file-renamer' )
         );
     }
 
