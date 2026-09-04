@@ -4,7 +4,7 @@
 
 Automatically sanitize and rename uploaded files into clean, SEO-friendly names. It transliterates Latin diacritics, normalizes separators, strips non-ASCII characters, and lowercases both filenames and extensions to ensure compatibility across all operating systems.
 
-![Version](https://img.shields.io/badge/version-1.2.2-blue) ![WordPress](https://img.shields.io/badge/WordPress-5.0%2B-21759b) ![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4) ![License](https://img.shields.io/badge/license-GPL--2.0--or--later-green)
+![Version](https://img.shields.io/badge/version-1.3.0-blue) ![WordPress](https://img.shields.io/badge/WordPress-5.0%2B-21759b) ![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4) ![License](https://img.shields.io/badge/license-GPL--2.0--or--later-green)
 
 ---
 
@@ -16,6 +16,7 @@ Automatically sanitize and rename uploaded files into clean, SEO-friendly names.
 - **Consecutive Hyphen Collapsing**: Replaces multiple hyphens with a single hyphen and strips them from the beginning and end of the filename.
 - **Safe Fallback**: Generates a safe name (e.g., `file-1718000000.png`) if the entire filename consists of non-ASCII characters (like Chinese/Japanese/Korean) that get stripped.
 - **Optional Date Prefix**: Organize files chronologically with a toggleable `YYYY-MM-DD` prefix under **Settings → File Renamer**.
+- **Optional Time-Based File Names**: Store every upload under its upload time (`今日快訊.jpg` -> `2026-09-04-153012.jpg`), in the site's own time zone, so the result is predictable no matter what the file was called. The media library title keeps the name the file was uploaded under (`今日快訊`), so files stay searchable by their original name.
 
 ---
 

@@ -11,3 +11,4 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 }
 
 delete_option( 'sfr_add_date_prefix' );
+delete_option( 'sfr_serial_filename' );

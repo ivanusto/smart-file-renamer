@@ -3,7 +3,7 @@ Contributors: ivanusto
 Tags: upload, files, rename, special characters, seo
 Requires at least: 5.0
 Tested up to: 7.1
-Stable tag: 1.2.3
+Stable tag: 1.3.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -23,6 +23,7 @@ Smart File Renamer is a WordPress plugin that automatically sanitizes uploaded f
 * Collapses consecutive hyphens
 * Safe fallback name when the entire file name is stripped
 * Optional date prefix (YYYY-MM-DD) for chronological file organization
+* Optional time-based file names (YYYY-MM-DD-HHMMSS) for every upload, with the original name kept as the media library title
 * Simple settings interface under Settings → File Renamer
 
 = Use Cases =
@@ -51,7 +52,15 @@ The plugin generates a safe fallback name using the current Unix timestamp (e.g.
 
 = Does it support CJK (Chinese, Japanese, Korean) characters? =
 
-CJK characters are stripped from the file name since there is no standard ASCII transliteration. Consider renaming such files before uploading.
+CJK characters are stripped from the file name since there is no standard ASCII transliteration. What is left over depends on the rest of the name, so results are uneven: `today-news.jpg` keeps a readable name, `news2026.jpg` comes back as `2026.jpg`, and a name that is nothing but CJK falls back to a timestamp. If you would rather every upload get the same predictable name, enable **Time-Based File Names**.
+
+= What is the difference between the date prefix and time-based file names? =
+
+The date prefix keeps the sanitized name and puts today's date in front of it (`2026-09-04-today-news.jpg`). Time-based file names replace the name entirely with the moment of upload (`2026-09-04-153012.jpg`), so the result is identical for every file regardless of what it was called. When time-based names are on, the date prefix is not applied on top - the name already starts with the date.
+
+= If the file name is replaced, how do I find my images again? =
+
+By their original name. The media library title still holds the name the file was uploaded under - `今日快訊.jpg` is stored as `2026-09-04-153012.jpg` but stays titled `今日快訊` - and the media library search box searches titles. WordPress sets that title from the uploaded name in both of its upload paths; since 1.3.0 the plugin also guards the fallback the REST API uses, so a renamed upload is never left titled after the file on disk.
 
 = Can I customize the renaming format? =
 
@@ -62,6 +71,10 @@ You can enable or disable the date prefix. Additional format options may be adde
 1. Plugin settings page
 
 == Changelog ==
+
+= 1.3.0 =
+* New: **Time-Based File Names** option. Every uploaded file is stored as its upload time, `2026-09-04-153012.jpg`, whatever it was called before. The previous rules only produced a timestamp when sanitization emptied the name completely, so a set of CJK uploads came out inconsistent — `今日快訊.jpg` became `file-1757000000.jpg` while `今日快訊2026.jpg` became `2026.jpg`. The time is read in the site's own time zone, so a file uploaded at 00:30 in Taipei carries that day's date rather than the UTC day before it. Off by default; the option sits above the date prefix under Settings → File Renamer.
+* The media library title still holds the name the file was uploaded under, so files stay searchable by their original name even when nothing of it survives in the file name. WordPress already does this in both upload paths — `media_handle_upload()` reads `$_FILES` before the renaming filter runs, and the REST controller keeps the submitted name — and the plugin now also covers the fallback in `WP_REST_Attachments_Controller::create_item()` that titles an attachment after the stored file. A title typed by a person, or read out of the image's IPTC metadata, is never touched.
 
 = 1.2.3 =
 * Fixed: WordPress 7.1 renamed every sub-size twice. Its client-side media processing generates sub-sizes in the browser and posts them back one at a time to `/wp/v2/media/{id}/sideload`, along with companion files such as the HEIC original of a converted photo or the video an animated GIF becomes. Those go through the same upload prefilter as a normal upload, but the name the browser sends is already derived from the stored base name, so the date prefix was applied a second time: `photo-150x150.jpg` was stored as `2026-08-20-2026-08-20-photo-150x150-1.jpg`. The trailing `-1` came with it, because a name that no longer begins with the attachment's base name stops core's `filter_wp_unique_filename()` from stripping the collision suffix. Sideloaded files are now left alone.
@@ -98,6 +111,9 @@ You can enable or disable the date prefix. Additional format options may be adde
 * Settings page with date prefix option
 
 == Upgrade Notice ==
+
+= 1.3.0 =
+Adds an optional time-based file naming mode. Existing behaviour is unchanged until you enable it. No database changes required.
 
 = 1.1.0 =
 Improved transliteration, edge-case fixes, and code quality improvements. No database changes required.

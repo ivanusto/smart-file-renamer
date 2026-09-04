@@ -4,7 +4,7 @@
 
 上傳檔案時自動進行名稱清理與標準化，轉換成乾淨且符合 SEO 的檔名。支援將拉丁變音符號轉換為對應字母、將分隔符號統一為連字號（hyphen）、清除所有非 ASCII 字元，並將檔名與副檔名轉換為小寫，以確保在各類作業系統伺服器上的跨平台相容性。
 
-![Version](https://img.shields.io/badge/version-1.2.2-blue) ![WordPress](https://img.shields.io/badge/WordPress-5.0%2B-21759b) ![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4) ![License](https://img.shields.io/badge/license-GPL--2.0--or--later-green)
+![Version](https://img.shields.io/badge/version-1.3.0-blue) ![WordPress](https://img.shields.io/badge/WordPress-5.0%2B-21759b) ![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4) ![License](https://img.shields.io/badge/license-GPL--2.0--or--later-green)
 
 ---
 
@@ -16,6 +16,7 @@
 - **連續連字號收縮**：自動合併連續的連字號（例如 `--` 轉 `-`），並修剪檔名首尾的連字號。
 - **安全備用機制**：若檔名經清理後變成空值（例如全中文/韓文/日文檔名被移除後），自動以目前 Unix 時間戳記作為備用名稱（例如 `file-1718000000.png`）。
 - **可選日期前綴**：可於後台 **設定 → File Renamer** 啟用 `YYYY-MM-DD-` 前綴，以時間先後順序整理上傳的媒體檔案。
+- **可選時間流水號檔名**：啟用後，所有上傳檔案一律以上傳當下的時間命名（`今日快訊.jpg` → `2026-09-04-153012.jpg`），時間以網站時區為準，不論原始檔名是什麼，結果都一致。媒體庫中的標題仍會保留上傳時的原始檔名（`今日快訊`），因此仍可用原檔名搜尋到自己的圖片。
 
 ---
 

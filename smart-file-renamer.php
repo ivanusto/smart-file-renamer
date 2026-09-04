@@ -3,7 +3,7 @@
  * Plugin Name: Smart File Renamer
  * Plugin URI: https://github.com/ivanusto/smart-file-renamer
  * Description: Automatically renames files with accents and special characters during upload for better SEO.
- * Version: 1.2.3
+ * Version: 1.3.0
  * Author: Ivan Lin
  * Author URI: https://github.com/ivanusto
  * License: GPLv2 or later
@@ -29,6 +29,14 @@ final class SmartFileRenamer {
      */
     private string $rest_route = '';
 
+    /**
+     * Original upload names of the files renamed during this request, keyed by
+     * the base name this plugin gave them.
+     *
+     * @var array<string, string>
+     */
+    private array $original_titles = [];
+
     public static function instance(): self {
         if ( null === self::$instance ) {
             self::$instance = new self();
@@ -47,6 +55,7 @@ final class SmartFileRenamer {
         add_filter( 'wp_handle_upload_prefilter', [ $this, 'rename_upload' ] );
         add_filter( 'wp_handle_sideload_prefilter', [ $this, 'rename_upload' ] );
         add_filter( 'rest_pre_dispatch', [ $this, 'remember_rest_route' ], 10, 3 );
+        add_filter( 'wp_insert_attachment_data', [ $this, 'keep_original_title' ], 10, 2 );
         add_action( 'admin_menu', [ $this, 'add_admin_menu' ] );
         add_action( 'admin_init', [ $this, 'register_settings' ] );
     }
@@ -101,15 +110,87 @@ final class SmartFileRenamer {
             return $file;
         }
 
-        if ( ! empty( $file['name'] ) ) {
-            $file['name'] = $this->rename_file( $file['name'] );
+        if ( empty( $file['name'] ) ) {
+            return $file;
         }
+
+        $original     = (string) $file['name'];
+        $file['name'] = $this->rename_file( $original );
+
+        if ( $file['name'] !== $original ) {
+            $key   = pathinfo( $file['name'], PATHINFO_FILENAME );
+            $title = sanitize_text_field( pathinfo( $original, PATHINFO_FILENAME ) );
+
+            if ( '' !== $key && '' !== $title ) {
+                $this->original_titles[ $key ] = $title;
+            }
+        }
+
         return $file;
+    }
+
+    /**
+     * Keep the name the visitor uploaded as the media library title.
+     *
+     * Both upload paths already do this on their own: media_handle_upload()
+     * reads $_FILES before the prefilter runs, and the REST controller keeps
+     * $files['file']['name'], which the prefilter never sees because PHP passes
+     * the array by value. This filter is the safety net for the fallbacks -
+     * WP_REST_Attachments_Controller::create_item() ends with "Fall back to the
+     * original approach" and titles the attachment after the *stored* file - so
+     * a renamed upload can never end up titled "2026-09-04-153012", which is
+     * unsearchable in the media library.
+     *
+     * The title is only restored when it still matches the name this plugin
+     * generated for that same file during this request (plus any "-1" collision
+     * suffix wp_unique_filename() added), so a title typed by a person or read
+     * out of the image's IPTC metadata is left alone.
+     *
+     * @param array $data    Sanitized, slashed attachment data about to be inserted.
+     * @param array $postarr Raw attachment data passed to wp_insert_post().
+     * @return array The attachment data, with the original upload name as its title.
+     */
+    public function keep_original_title( array $data, array $postarr ): array {
+        if ( empty( $this->original_titles ) || ! empty( $postarr['ID'] ) ) {
+            return $data;
+        }
+
+        $title = isset( $data['post_title'] ) ? (string) $data['post_title'] : '';
+
+        if ( '' === $title ) {
+            return $data;
+        }
+
+        if ( ! isset( $this->original_titles[ $title ] ) ) {
+            // Two files renamed to the same name in the same second: the second
+            // one is stored as "<name>-1" by wp_unique_filename().
+            $title = (string) preg_replace( '/-\d+$/', '', $title );
+
+            if ( ! isset( $this->original_titles[ $title ] ) ) {
+                return $data;
+            }
+        }
+
+        // $data is slashed, as wp_insert_post() expects.
+        $data['post_title'] = wp_slash( $this->original_titles[ $title ] );
+
+        return $data;
     }
 
     public function rename_file( string $filename ): string {
         $extension = strtolower( pathinfo( $filename, PATHINFO_EXTENSION ) );
-        $name      = pathinfo( $filename, PATHINFO_FILENAME );
+
+        // Serial mode replaces the name outright, so none of the normalization
+        // below applies. The upload time is taken in the site's own time zone:
+        // a file uploaded at 00:30 in Taipei belongs to that day, not to the
+        // UTC day before it.
+        if ( get_option( 'sfr_serial_filename', false ) ) {
+            $name = current_time( 'Y-m-d-His' );
+
+            return '' !== $extension ? "{$name}.{$extension}" : $name;
+        }
+
+        $name = pathinfo( $filename, PATHINFO_FILENAME );
 
         // Transliterate Latin diacritics to ASCII equivalents (WordPress built-in, 200+ characters)
         $name = remove_accents( $name );
@@ -159,11 +240,29 @@ final class SmartFileRenamer {
             ]
         );
 
+        register_setting(
+            'smart-file-renamer',
+            'sfr_serial_filename',
+            [
+                'type'              => 'boolean',
+                'sanitize_callback' => 'rest_sanitize_boolean',
+                'default'           => false,
+            ]
+        );
+
         add_settings_section(
             'sfr_main_section',
             __( 'General Settings', 'smart-file-renamer' ),
             [ $this, 'section_callback' ],
             'smart-file-renamer'
+        );
+
+        add_settings_field(
+            'sfr_serial_filename',
+            __( 'Time-Based File Names', 'smart-file-renamer' ),
+            [ $this, 'serial_filename_callback' ],
+            'smart-file-renamer',
+            'sfr_main_section'
         );
 
         add_settings_field(
@@ -177,6 +276,16 @@ final class SmartFileRenamer {
 
     public function section_callback(): void {
         echo '<p>' . esc_html__( 'Configure how your files should be renamed.', 'smart-file-renamer' ) . '</p>';
+    }
+
+    public function serial_filename_callback(): void {
+        $value = get_option( 'sfr_serial_filename', false );
+        printf(
+            '<input type="checkbox" name="sfr_serial_filename" %1$s value="1"> %2$s<p class="description">%3$s</p>',
+            checked( $value, true, false ),
+            esc_html__( 'Name every uploaded file after its upload time (YYYY-MM-DD-HHMMSS)', 'smart-file-renamer' ),
+            esc_html__( 'The media library title keeps the name the file was uploaded under, so files stay searchable by their original name. This replaces the whole file name, so the date prefix below is not applied on top of it.', 'smart-file-renamer' )
+        );
     }
 
     public function date_prefix_callback(): void {
@@ -211,4 +320,5 @@ SmartFileRenamer::instance();
 
 register_activation_hook( __FILE__, static function (): void {
     add_option( 'sfr_add_date_prefix', false );
+    add_option( 'sfr_serial_filename', false );
 } );
